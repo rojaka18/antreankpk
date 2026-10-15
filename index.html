@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DepoQ - Ambil Nomor Antrian</title>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <style>
 :root{--bg:#eef2f5;--card:#fff;--ink:#1f2a37;--mut:#6b7a8c;--line:#dfe5ec;--pri:#0f766e;--pri2:#0b5c56;--soft:#e6f4f2}
 *{box-sizing:border-box}
@@ -107,7 +109,18 @@ $("sap").oninput = () => {
     } catch(e){ setOk(false, "Koneksi bermasalah, coba lagi.", true); }
   }, 300);
 };
-
+const FIREBASE_CONFIG = {apiKey:"AIzaSyBaXU7sZBu9H4lgbN2XzczOSdr0Cp1P-_M", authDomain:"depoq-antrean.firebaseapp.com", projectId:"depoq-antrean", storageBucket:"depoq-antrean.firebasestorage.app", messagingSenderId:"328905760188", appId:"1:328905760188:web:05217e80f4919d9b7e9fb9"};
+const VAPID_KEY = "BHwULhyvKC44PcQJEv3jlCbONpxIFmge0VDUarg5Y5eCqSAV1GGDAjiTPvMeEjFml5WdwHlfF5vgpQuLP0e8cRI";
+async function getPushToken(){
+  try {
+    if (!("Notification" in window) || !("serviceWorker" in navigator) || !firebase.messaging.isSupported()) return "";
+    if (await Notification.requestPermission() !== "granted") return "";
+    if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
+    await navigator.serviceWorker.ready;
+    return await firebase.messaging().getToken({vapidKey: VAPID_KEY, serviceWorkerRegistration: reg});
+  } catch(e){ return ""; }
+}
 const API_URL = "https://script.google.com/macros/s/AKfycbyY1VLU8BEeLnaIEhvfoIbIKC6YGwEJU621HtnP0qQRHlLWqQMsVlMQDRsadQJWlnhT/exec";
 async function api(action, data){
   if (!API_URL) return demo(action, data);
@@ -136,9 +149,11 @@ $("go").onclick = async () => {
   const sap = $("sap").value, err = $("err"); err.textContent = "";
   if (!sel) return err.textContent = "Pilih layanan dulu.";
   if (!nmOk) return err.textContent = "SAP ID belum valid.";
+  const tokenP = getPushToken();   // pop-up izin muncul dari klik ini
   $("go").disabled = true; $("go").textContent = "Memproses...";
   try {
-    const r = await api("register", {svc: sel, sap});
+    const token = await tokenP;
+    const r = await api("register", {svc: sel, sap, token});
     if (!r.ok) throw new Error(r.msg || "Gagal mengambil antrian.");
     ticket = {svc: r.svc || sel, no: r.no, seq: r.seq, sap};
     try { localStorage.dq_ticket = JSON.stringify(ticket); } catch(e){}
