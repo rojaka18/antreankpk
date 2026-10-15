@@ -3,40 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DepoQ - Ambil Nomor Antrian</title>
+<meta name="theme-color" content="#0f766e">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f766e'/%3E%3Ctext x='32' y='42' font-size='26' font-weight='800' text-anchor='middle' fill='white' font-family='Arial'%3EDQ%3C/text%3E%3C/svg%3E">
+<title>Antrean Depot KPK</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
 <style>
-:root{--bg:#eef2f5;--card:#fff;--ink:#1f2a37;--mut:#6b7a8c;--line:#dfe5ec;--pri:#0f766e;--pri2:#0b5c56;--soft:#e6f4f2}
+:root{--bg:#eef2f5;--card:#fff;--ink:#1f2a37;--mut:#6b7a8c;--line:#dfe5ec;--pri:#0f766e;--pri2:#0b5c56;--soft:#e6f4f2;--red:#b42318}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
 .wrap{max-width:440px;margin:0 auto;padding:24px 16px 40px}
 .logo{width:64px;height:64px;border-radius:16px;background:var(--pri);color:#fff;display:grid;place-items:center;font-weight:800;font-size:22px;margin:8px auto 12px}
 h1{font-size:24px;text-align:center;margin:0 0 6px}
-.sub{text-align:center;font-weight:700;font-size:14px;margin:0}
 .addr{text-align:center;color:var(--mut);font-size:12px;margin:4px 0 18px}
 .card{background:var(--card);border-radius:20px;padding:18px;box-shadow:0 4px 18px rgba(20,40,60,.07)}
 .lbl{font-size:11px;letter-spacing:.06em;color:var(--mut);font-weight:700;margin:0 0 8px}
 .svc{display:flex;gap:12px;align-items:center;border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:10px;cursor:pointer;background:#fff;width:100%;text-align:left;font:inherit;color:inherit}
+.svc:focus-visible,.btn:focus-visible,.lnk:focus-visible,input:focus-visible{outline:3px solid rgba(15,118,110,.35);outline-offset:2px}
 .svc.on{border-color:var(--pri);background:var(--soft)}
+.svc::after{content:"";width:22px;height:22px;border-radius:50%;border:2px solid var(--line);margin-left:auto;flex:none}
+.svc.on::after{border-color:var(--pri);background:var(--pri) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12l5 5L20 7'/%3E%3C/svg%3E") center/14px no-repeat}
 .ic{width:42px;height:42px;border-radius:12px;border:1.5px solid var(--pri);display:grid;place-items:center;font-size:20px;flex:none;background:#fff}
 .svc b{display:block;font-size:16px}
-.svc small{color:var(--mut)}
+.svc small{display:block;color:var(--mut)}
+.svc small.q{color:var(--pri2);font-weight:600;margin-top:2px}
 input{width:100%;padding:14px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:16px;background:#f6f8fa}
 input:focus{outline:none;border-color:var(--pri);background:#fff}
-.hint{font-size:12px;color:var(--mut);margin:6px 0 14px}
-.err{color:#b42318;font-size:13px;margin:0 0 10px;min-height:18px}
+.hint{font-size:12px;color:var(--mut);margin:6px 0 12px}
+.hint:empty{display:none}
+.err{color:var(--red);font-size:13px;margin:0 0 10px;min-height:18px}
 .btn{width:100%;border:0;border-radius:14px;padding:16px;font:inherit;font-size:17px;font-weight:700;color:#fff;background:linear-gradient(90deg,var(--pri),var(--pri2));cursor:pointer}
-.btn:disabled{opacity:.6}
+.btn:disabled{opacity:.6;cursor:not-allowed}
 .btn.ghost{background:#fff;color:var(--pri);border:1.5px solid var(--pri);margin-top:10px}
+.btn.danger{background:var(--red)}
+.lnk{display:block;margin:18px auto 0;border:0;background:none;color:var(--mut);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:8px}
 .hide{display:none!important}
 .num{font-size:72px;font-weight:800;text-align:center;color:var(--pri);margin:6px 0;letter-spacing:.02em}
 .t{text-align:center;color:var(--mut);font-size:14px;margin:0}
+.who{text-align:center;font-weight:700;font-size:15px;margin:4px 0 0}
+.rows{margin-top:14px}
 .row{display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
-.row:first-of-type{margin-top:14px}
+.conn{text-align:center;font-size:12px;color:var(--mut);margin:6px 0 0}
 .call{background:#fef3c7;border:1.5px solid #f59e0b;border-radius:14px;padding:14px;text-align:center;font-weight:700;margin-top:14px}
-.full{position:fixed;inset:0;background:#b42318;color:#fff;display:grid;place-items:center;text-align:center;z-index:9;padding:24px}
+.call.warn{background:#fee4e2;border-color:#f04438;font-weight:600;font-size:14px}
+.full{position:fixed;inset:0;background:var(--red);color:#fff;display:grid;place-items:center;text-align:center;z-index:9;padding:24px}
 .full h2{font-size:34px;margin:0 0 8px}.full .n{font-size:84px;font-weight:800}
+.full.dlg{background:rgba(15,25,35,.55);z-index:10}
+.box{background:#fff;color:var(--ink);border-radius:20px;padding:22px;width:100%;max-width:340px}
+.box h3{margin:0 0 6px;font-size:19px}.box p{margin:0 0 16px;color:var(--mut);font-size:14px}
+.box .btn{margin-top:8px}
 </style>
 </head>
 <body>
@@ -52,7 +67,9 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
     <p class="lbl" style="margin-top:16px">SAP ID</p>
     <input id="sap" type="tel" inputmode="numeric" maxlength="10" placeholder="Contoh: 7000039674" autocomplete="off">
     <p class="hint" id="nm">Masukkan 10 digit SAP ID.</p>
-    <p class="err" id="err"></p>
+    <p class="hint" id="need"></p>
+    <p class="hint">🔔 Izinkan notifikasi saat diminta, supaya Anda dipanggil walau layar mati.</p>
+    <p class="err" id="err" role="alert"></p>
     <button class="btn" id="go" disabled>Ambil Nomor Antrian</button>
   </div>
 
@@ -61,19 +78,34 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
     <p class="t">Nomor antrian Anda</p>
     <div class="num" id="tNum">-</div>
     <p class="t" id="tSvc"></p>
-    <div class="row"><span>Sedang dipanggil</span><b id="tNow">-</b></div>
-    <div class="row"><span>Antrean di depan Anda</span><b id="tAhead">-</b></div>
-    <div class="call hide" id="tCall">Giliran Anda! Silakan menuju loket.</div>
+    <p class="who" id="tName"></p>
+    <div class="rows">
+      <div class="row"><span>Sedang dipanggil</span><b id="tNow">-</b></div>
+      <div class="row"><span>Antrean di depan Anda</span><b id="tAhead">-</b></div>
+    </div>
+    <p class="conn" id="tConn"></p>
+    <div class="call warn hide" id="tWarn">🔕 Notifikasi tidak aktif. Jangan tutup halaman ini dan pantau layar loket.</div>
+    <div class="call hide" id="tCall">Giliran Anda! Silakan menuju <span id="tLoket">loket</span>.</div>
     <p class="hint" style="margin-top:14px">Jangan kunci layar dan keluar dari aplikasi. Layar ini berbunyi saat giliran Anda.</p>
-    <button class="btn ghost" id="cancel">Batalkan antrian</button>
+    <button class="lnk" id="cancel">Batalkan antrian</button>
   </div>
 </div>
 
-<div class="full hide" id="alarm"><div><h2>GILIRAN ANDA</h2><div class="n" id="aNum"></div><p>Silakan menuju loket</p><button class="btn ghost" id="aOk">OK</button></div></div>
+<div class="full hide" id="alarm"><div><h2>GILIRAN ANDA</h2><div class="n" id="aNum"></div><p id="aLoket">Silakan menuju loket</p><button class="btn ghost" id="aOk">OK</button></div></div>
+
+<div class="full dlg hide" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dT">
+  <div class="box">
+    <h3 id="dT">Batalkan antrian?</h3>
+    <p>Nomor <b id="dNum"></b> akan dihapus dari antrean dan tidak bisa dikembalikan.</p>
+    <button class="btn danger" id="dYes">Ya, batalkan</button>
+    <button class="btn ghost" id="dNo">Tidak, tetap antri</button>
+  </div>
+</div>
 
 <script>
 // ====== KONFIGURASI ======
 const POLL_MS = 4000;
+const INFO_MS = 15000;
 const SERVICES = [
   {id:"K", name:"Ambil Kunci",  desc:"Antrian pengambilan kunci.", icon:"🔑"},
   {id:"P", name:"Pelayanan",    desc:"Klarifikasi, dll.", icon:"🧑‍💼"},
@@ -81,21 +113,26 @@ const SERVICES = [
 ];
 // =========================
 const $ = id => document.getElementById(id);
-let sel = null, ticket = null, timer = null, wake = null, alerted = false, lastCall = null;
+let sel = null, ticket = null, timer = null, wake = null, lastCall = null, nmName = "";
 
 $("svcList").innerHTML = SERVICES.map(s =>
-  `<button class="svc" data-id="${s.id}"><span class="ic">${s.icon}</span><span><b>${s.name}</b><small>${s.desc}</small></span></button>`).join("");
+  `<button class="svc" data-id="${s.id}" aria-pressed="false"><span class="ic">${s.icon}</span><span><b>${s.name}</b><small>${s.desc}</small><small class="q" id="q-${s.id}"></small></span></button>`).join("");
 $("svcList").onclick = e => {
   const b = e.target.closest(".svc"); if (!b) return;
   sel = b.dataset.id;
-  document.querySelectorAll(".svc").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll(".svc").forEach(x => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+  needHint();
 };
 
 const SAP_LEN = 10;
 let nmOk = false, lt;
+function needHint(){
+  $("need").textContent = !sel && !nmOk ? "Pilih layanan dan isi SAP ID untuk melanjutkan." : !sel ? "Pilih layanan dulu." : "";
+}
 function setOk(ok, msg, bad){
   nmOk = ok; $("go").disabled = !ok;
   const n = $("nm"); n.textContent = msg; n.style.color = ok ? "#0f766e" : bad ? "#b42318" : "";
+  needHint();
 }
 $("sap").oninput = () => {
   const v = $("sap").value.replace(/\D/g,""); $("sap").value = v; clearTimeout(lt);
@@ -105,10 +142,12 @@ $("sap").oninput = () => {
     try {
       const r = await api("lookup", {sap: v});
       if ($("sap").value !== v) return;
-      r.ok ? setOk(true, "✓ " + r.name) : setOk(false, "SAP ID tidak ditemukan.", true);
-    } catch(e){ setOk(false, "Koneksi bermasalah, coba lagi.", true); }
+      if (r.ok){ nmName = r.name || ""; setOk(true, "✓ " + r.name); }
+      else setOk(false, "SAP ID tidak ditemukan. Periksa lagi atau hubungi petugas loket.", true);
+    } catch(e){ setOk(false, "Error: " + (e.message || e), true); }
   }, 300);
 };
+
 const FIREBASE_CONFIG = {apiKey:"AIzaSyBaXU7sZBu9H4lgbN2XzczOSdr0Cp1P-_M", authDomain:"depoq-antrean.firebaseapp.com", projectId:"depoq-antrean", storageBucket:"depoq-antrean.firebasestorage.app", messagingSenderId:"328905760188", appId:"1:328905760188:web:05217e80f4919d9b7e9fb9"};
 const VAPID_KEY = "BHwULhyvKC44PcQJEv3jlCbONpxIFmge0VDUarg5Y5eCqSAV1GGDAjiTPvMeEjFml5WdwHlfF5vgpQuLP0e8cRI";
 async function getPushToken(){
@@ -125,7 +164,8 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyY1VLU8BEeLnaIEhvfoIbI
 async function api(action, data){
   if (!API_URL) return demo(action, data);
   const r = await fetch(API_URL, {method:"POST", body:JSON.stringify({action, ...data})});
-  return r.json();
+  const t = await r.text();
+  try { return JSON.parse(t); } catch(e){ throw new Error("Server tidak membalas JSON: " + t.slice(0,60)); }
 }
 // mode demo: simulasi lokal supaya UI bisa dicoba tanpa backend
 function demo(action, d){
@@ -144,18 +184,31 @@ function demo(action, d){
   }
 }
 
+// jumlah antrean per layanan (butuh action "info" di backend; kalau belum ada, diabaikan)
+async function loadInfo(){
+  if (ticket || document.hidden) return;
+  try {
+    const r = await api("info", {});
+    if (r && r.ok && r.wait) SERVICES.forEach(s => {
+      const q = $("q-" + s.id);
+      if (q && r.wait[s.id] != null) q.textContent = "Menunggu: " + r.wait[s.id] + " orang";
+    });
+  } catch(e){}
+}
+loadInfo(); setInterval(loadInfo, INFO_MS);
+
 $("go").onclick = async () => {
   unlockAudio();
   const sap = $("sap").value, err = $("err"); err.textContent = "";
   if (!sel) return err.textContent = "Pilih layanan dulu.";
   if (!nmOk) return err.textContent = "SAP ID belum valid.";
-  const tokenP = getPushToken();   // pop-up izin muncul dari klik ini
+  const tokenP = Promise.race([getPushToken(), new Promise(r => setTimeout(() => r(""), 15000))]);
   $("go").disabled = true; $("go").textContent = "Memproses...";
   try {
     const token = await tokenP;
     const r = await api("register", {svc: sel, sap, token});
     if (!r.ok) throw new Error(r.msg || "Gagal mengambil antrian.");
-    ticket = {svc: r.svc || sel, no: r.no, seq: r.seq, sap};
+    ticket = {svc: r.svc || sel, no: r.no, seq: r.seq, sap, push: !!token, name: nmName};
     try { localStorage.dq_ticket = JSON.stringify(ticket); } catch(e){}
     showTicket();
   } catch(e){ err.textContent = e.message || "Koneksi bermasalah, coba lagi."; }
@@ -166,16 +219,28 @@ function showTicket(){
   const s = SERVICES.find(x => x.id === ticket.svc);
   $("vForm").classList.add("hide"); $("vTicket").classList.remove("hide");
   $("tNum").textContent = ticket.no; $("tSvc").textContent = s.name;
-  lastCall = null; poll(); timer = setInterval(poll, POLL_MS);
+  $("tName").textContent = ticket.name || "";
+  $("tWarn").classList.toggle("hide", ticket.push !== false);
+  $("tConn").textContent = "Memuat status...";
+  lastCall = null; clearInterval(timer); poll(); timer = setInterval(poll, POLL_MS);
   try { navigator.wakeLock && navigator.wakeLock.request("screen").then(w => wake = w); } catch(e){}
 }
 async function poll(){
+  if (!ticket) return;
   try {
     const r = await api("status", {svc: ticket.svc, seq: ticket.seq, sap: ticket.sap});
-    if (r.closed && !r.called){ reset(); return; }
+    if (!ticket) return;
+    if (r.closed && !r.called){
+      reset();
+      $("err").textContent = "Nomor Anda sudah ditutup atau terlewat. Silakan ambil nomor baru.";
+      return;
+    }
     $("tNow").textContent = r.now; $("tAhead").textContent = r.ahead;
-    if (r.called && r.calledAt !== lastCall){ lastCall = r.calledAt; ring(); }
-  } catch(e){}
+    $("tConn").textContent = "Diperbarui " + new Date().toLocaleTimeString("id-ID"); $("tConn").style.color = "";
+    if (r.called && r.calledAt !== lastCall){ lastCall = r.calledAt; ring(r.loket); }
+  } catch(e){
+    $("tConn").textContent = "Koneksi terputus, mencoba lagi..."; $("tConn").style.color = "#b42318";
+  }
 }
 let alarmT = null, actx = null;
 function unlockAudio(){ try { actx = actx || new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); } catch(e){} }
@@ -189,7 +254,10 @@ function beep(){
   } catch(e){}
 }
 function buzz(){ try { navigator.vibrate && navigator.vibrate([800,200,800,200,800,200,800,200,800]); } catch(e){} }
-function ring(){
+function ring(loket){
+  const where = loket ? "Silakan menuju " + loket : "Silakan menuju loket";
+  $("tLoket").textContent = loket || "loket";
+  $("aLoket").textContent = where;
   $("tCall").classList.remove("hide");
   $("aNum").textContent = ticket.no; $("alarm").classList.remove("hide");
   let n = 0; clearInterval(alarmT);
@@ -198,16 +266,26 @@ function ring(){
 }
 $("aOk").onclick = () => { clearInterval(alarmT); try { navigator.vibrate && navigator.vibrate(0); } catch(e){} $("alarm").classList.add("hide"); };
 function reset(){
-  clearInterval(timer); try { localStorage.removeItem("dq_ticket"); } catch(e){} ticket = null;
-  $("tCall").classList.add("hide"); $("vTicket").classList.add("hide"); $("vForm").classList.remove("hide");
+  clearInterval(timer); clearInterval(alarmT);
+  try { localStorage.removeItem("dq_ticket"); } catch(e){} ticket = null;
+  $("alarm").classList.add("hide"); $("tCall").classList.add("hide"); $("tWarn").classList.add("hide");
+  $("vTicket").classList.add("hide"); $("vForm").classList.remove("hide");
+  loadInfo();
 }
-$("cancel").onclick = async () => {
-  if (!confirm("Batalkan antrian ini?")) return;
+
+// dialog batalkan antrian
+$("cancel").onclick = () => { $("dNum").textContent = ticket.no; $("dlg").classList.remove("hide"); $("dNo").focus(); };
+$("dNo").onclick = () => $("dlg").classList.add("hide");
+$("dYes").onclick = async () => {
+  $("dYes").disabled = true; $("dYes").textContent = "Membatalkan...";
   try { await api("cancel", {svc: ticket.svc, seq: ticket.seq, sap: ticket.sap}); } catch(e){}
-  reset();
+  $("dYes").disabled = false; $("dYes").textContent = "Ya, batalkan";
+  $("dlg").classList.add("hide"); reset();
 };
+
 document.addEventListener("visibilitychange", async () => {
   if (!document.hidden && ticket){ poll(); try { wake = await navigator.wakeLock.request("screen"); } catch(e){} }
+  else if (!document.hidden) loadInfo();
 });
 
 // pulihkan tiket kalau halaman dibuka ulang
