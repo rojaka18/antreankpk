@@ -42,7 +42,6 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
 .t{text-align:center;color:var(--mut);font-size:14px;margin:0}
 .who{text-align:center;font-weight:700;font-size:15px;margin:4px 0 0}
 .rows{margin-top:14px}
-.row{display:flex;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);font-size:15px}
 .conn{text-align:center;font-size:12px;color:var(--mut);margin:6px 0 0}
 .call{background:#fef3c7;border:1.5px solid #f59e0b;border-radius:14px;padding:14px;text-align:center;font-weight:700;margin-top:14px}
 .call.warn{background:#fee4e2;border-color:#f04438;font-weight:600;font-size:14px}
@@ -52,6 +51,32 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
 .box{background:#fff;color:var(--ink);border-radius:20px;padding:22px;width:100%;max-width:340px}
 .box h3{margin:0 0 6px;font-size:19px}.box p{margin:0 0 16px;color:var(--mut);font-size:14px}
 .box .btn{margin-top:8px}
+
+/* ===== Tampilan besar & jelas untuk driver ===== */
+body{font-size:18px}
+h1{font-size:28px}
+.addr{font-size:17px;color:var(--ink)}
+.lbl{font-size:17px;letter-spacing:0;color:var(--ink);margin:0 0 10px}
+.lbl b{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--pri);color:#fff;margin-right:8px}
+.svc{padding:16px 14px;border-width:3px;min-height:88px;gap:14px}
+.svc b{font-size:23px}.svc small{font-size:16px}.svc small:empty{display:none}
+.ic{width:58px;height:58px;font-size:32px}
+.svc::after{width:30px;height:30px;border-width:3px}.svc.on::after{background-size:20px}
+input{font-size:28px;padding:16px;letter-spacing:.08em;text-align:center;border-width:3px}
+.hint{font-size:17px}.hint.info{font-size:19px;color:var(--ink);text-align:center;font-weight:600}
+#nm.ok{font-size:22px;font-weight:800}
+.err{font-size:19px;font-weight:700}
+.btn{padding:20px;font-size:23px;min-height:68px;border-radius:16px}
+.num{font-size:104px;line-height:1.1}
+.t{font-size:19px}.who{font-size:21px}
+.stat{text-align:center;font-size:26px;font-weight:800;padding:14px;border-radius:14px;margin:10px 0;background:#fef3c7;color:#92400e}
+.stat.go{background:var(--red);color:#fff;animation:bl 1s infinite}
+@keyframes bl{50%{opacity:.55}}
+.big{font-size:26px;text-align:center;margin:12px 0}.big.sm{font-size:20px;color:var(--mut)}
+.conn{font-size:14px}.lnk{font-size:16px}
+.call.warn{font-size:17px}
+.full h2{font-size:46px}.full .n{font-size:130px;line-height:1}.full p{font-size:28px;font-weight:700}
+#aOk{font-size:30px;padding:24px;background:#fff;color:var(--red);border:0}
 </style>
 </head>
 <body>
@@ -62,15 +87,15 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
 
   <!-- FORM -->
   <div class="card" id="vForm">
-    <p class="lbl">PILIH LAYANAN</p>
+    <p class="lbl"><b>1</b>Pilih layanan</p>
     <div id="svcList"></div>
-    <p class="lbl" style="margin-top:16px">SAP ID</p>
-    <input id="sap" type="tel" inputmode="numeric" maxlength="10" placeholder="Contoh: 7000039674" autocomplete="off">
+    <p class="lbl" style="margin-top:18px"><b>2</b>Isi SAP ID (10 angka)</p>
+    <input id="sap" type="tel" inputmode="numeric" maxlength="10" placeholder="Ketik 10 angka" autocomplete="off">
     <p class="hint" id="nm">Masukkan 10 digit SAP ID.</p>
     <p class="hint" id="need"></p>
-    <p class="hint">🔔 Izinkan notifikasi saat diminta, supaya Anda dipanggil walau layar mati.</p>
-    <p class="err" id="err" role="alert"></p>
-    <button class="btn" id="go" disabled>Ambil Nomor Antrian</button>
+     <p class="hint">Aktifkan notifikasi agar Anda tetap mendapatkan panggilan saat layar mati.</p>
+    <p class="lbl" style="margin-top:6px"><b>3</b>Tekan tombol</p>
+    <button class="btn" id="go">Ambil Nomor Antrian</button>
   </div>
 
   <!-- TIKET -->
@@ -78,20 +103,27 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
     <p class="t">Nomor antrian Anda</p>
     <div class="num" id="tNum">-</div>
     <p class="t" id="tSvc"></p>
+    <div class="stat" id="tStat">MOHON TUNGGU</div>
     <p class="who" id="tName"></p>
     <div class="rows">
-      <div class="row"><span>Sedang dipanggil</span><b id="tNow">-</b></div>
-      <div class="row"><span>Antrean di depan Anda</span><b id="tAhead">-</b></div>
+      <p class="big">Di depan Anda: <b id="tAhead">-</b> orang</p>
+      <p class="big sm">Sedang dipanggil: <b id="tNow">-</b></p>
     </div>
     <p class="conn" id="tConn"></p>
-    <div class="call warn hide" id="tWarn">🔕 Notifikasi tidak aktif. Jangan tutup halaman ini dan pantau layar loket.</div>
+    <div class="call warn hide" id="tWarn">Notifikasi belum diaktif. Silakan aktifkan izin notifikasi pada pengaturan situs di browser. Selama notifikasi belum aktif, pastikan halaman tetap terbuka dan layar terpantau. Hubungi petugas jika memerlukan bantuan.</div>
     <div class="call hide" id="tCall">Giliran Anda! Silakan menuju <span id="tLoket">loket</span>.</div>
-    <p class="hint" style="margin-top:14px">Jangan kunci layar dan keluar dari aplikasi. Layar ini berbunyi saat giliran Anda.</p>
+    <p class="hint info" style="margin-top:14px">Mohon tidak kunci layar dan keluar dari aplikasi agar notifikasi masuk saat nomor antrian anda.</p>
     <button class="lnk" id="cancel">Batalkan antrian</button>
   </div>
 </div>
 
 <div class="full hide" id="alarm"><div><h2>GILIRAN ANDA</h2><div class="n" id="aNum"></div><p id="aLoket">Silakan menuju loket</p><button class="btn ghost" id="aOk">OK</button></div></div>
+
+<div class="full dlg hide" id="perm"><div class="box">
+  <h3>Aktifkan suara panggilan</h3>
+  <p>Tekan <b>IZINKAN</b> (atau <b>ALLOW</b>) saat permintaan notifikasi muncul agar Anda mendapat pemberitahuan ketika dipanggil.</p>
+  <button class="btn" id="permOk">Mengerti, lanjut</button>
+</div></div>
 
 <div class="full dlg hide" id="dlg" role="dialog" aria-modal="true" aria-labelledby="dT">
   <div class="box">
@@ -107,16 +139,16 @@ input:focus{outline:none;border-color:var(--pri);background:#fff}
 const POLL_MS = 4000;
 const INFO_MS = 15000;
 const SERVICES = [
-  {id:"K", name:"Ambil Kunci",  desc:"Antrian pengambilan kunci.", icon:"🔑"},
-  {id:"P", name:"Pelayanan",    desc:"Klarifikasi, dll.", icon:"🧑‍💼"},
-  {id:"S", name:"Seragam",      desc:"Antrian pengambilan seragam.", icon:"👕"}
+  {id:"K", name:"Ambil Kunci", icon:"🔑"},
+  {id:"P", name:"Pelayanan", icon:"🧑‍💼"},
+  {id:"S", name:"Seragam", icon:"👕"}
 ];
 // =========================
 const $ = id => document.getElementById(id);
 let sel = null, ticket = null, timer = null, wake = null, lastCall = null, nmName = "";
 
 $("svcList").innerHTML = SERVICES.map(s =>
-  `<button class="svc" data-id="${s.id}" aria-pressed="false"><span class="ic">${s.icon}</span><span><b>${s.name}</b><small>${s.desc}</small><small class="q" id="q-${s.id}"></small></span></button>`).join("");
+  `<button class="svc" data-id="${s.id}" aria-pressed="false"><span class="ic">${s.icon}</span><span><b>${s.name}</b><small class="q" id="q-${s.id}"></small></span></button>`).join("");
 $("svcList").onclick = e => {
   const b = e.target.closest(".svc"); if (!b) return;
   sel = b.dataset.id;
@@ -130,26 +162,30 @@ function needHint(){
   $("need").textContent = !sel && !nmOk ? "Pilih layanan dan isi SAP ID untuk melanjutkan." : !sel ? "Pilih layanan dulu." : "";
 }
 function setOk(ok, msg, bad){
-  nmOk = ok; $("go").disabled = !ok;
-  const n = $("nm"); n.textContent = msg; n.style.color = ok ? "#0f766e" : bad ? "#b42318" : "";
+  nmOk = ok;
+  const n = $("nm"); n.textContent = msg; n.classList.toggle("ok", ok); n.style.color = ok ? "#0f766e" : bad ? "#b42318" : "";
   needHint();
 }
 $("sap").oninput = () => {
   const v = $("sap").value.replace(/\D/g,""); $("sap").value = v; clearTimeout(lt);
-  if (v.length < SAP_LEN) return setOk(false, "Masukkan " + SAP_LEN + " digit SAP ID.");
+  if (v.length < SAP_LEN) return setOk(false, v.length + " dari " + SAP_LEN + " angka");
   setOk(false, "Memeriksa...");
   lt = setTimeout(async () => {
     try {
       const r = await api("lookup", {sap: v});
       if ($("sap").value !== v) return;
       if (r.ok){ nmName = r.name || ""; setOk(true, "✓ " + r.name); }
-      else setOk(false, "SAP ID tidak ditemukan. Periksa lagi atau hubungi petugas loket.", true);
-    } catch(e){ setOk(false, "Error: " + (e.message || e), true); }
+      else setOk(false, "SAP ID tidak ditemukan. Cek lagi angkanya, atau tanya petugas.", true);
+    } catch(e){ setOk(false, "Koneksi bermasalah. Coba lagi sebentar.", true); }
   }, 300);
 };
 
 const FIREBASE_CONFIG = {apiKey:"AIzaSyBaXU7sZBu9H4lgbN2XzczOSdr0Cp1P-_M", authDomain:"depoq-antrean.firebaseapp.com", projectId:"depoq-antrean", storageBucket:"depoq-antrean.firebasestorage.app", messagingSenderId:"328905760188", appId:"1:328905760188:web:05217e80f4919d9b7e9fb9"};
 const VAPID_KEY = "BHwULhyvKC44PcQJEv3jlCbONpxIFmge0VDUarg5Y5eCqSAV1GGDAjiTPvMeEjFml5WdwHlfF5vgpQuLP0e8cRI";
+function askPerm(){
+  if (!("Notification" in window) || Notification.permission !== "default") return Promise.resolve();
+  return new Promise(res => { $("perm").classList.remove("hide"); $("permOk").onclick = () => { $("perm").classList.add("hide"); res(); }; });
+}
 async function getPushToken(){
   try {
     if (!("Notification" in window) || !("serviceWorker" in navigator) || !firebase.messaging.isSupported()) return "";
@@ -200,8 +236,9 @@ loadInfo(); setInterval(loadInfo, INFO_MS);
 $("go").onclick = async () => {
   unlockAudio();
   const sap = $("sap").value, err = $("err"); err.textContent = "";
-  if (!sel) return err.textContent = "Pilih layanan dulu.";
-  if (!nmOk) return err.textContent = "SAP ID belum valid.";
+  if (!sel) return err.textContent = "Tekan salah satu kotak layanan di atas dulu.";
+  if (!nmOk) return err.textContent = "Isi SAP ID 10 angka dengan benar dulu.";
+  await askPerm();
   const tokenP = Promise.race([getPushToken(), new Promise(r => setTimeout(() => r(""), 15000))]);
   $("go").disabled = true; $("go").textContent = "Memproses...";
   try {
@@ -236,6 +273,7 @@ async function poll(){
       return;
     }
     $("tNow").textContent = r.now; $("tAhead").textContent = r.ahead;
+    $("tStat").textContent = r.called ? "GILIRAN ANDA" : "MOHON TUNGGU"; $("tStat").className = "stat" + (r.called ? " go" : "");
     $("tConn").textContent = "Diperbarui " + new Date().toLocaleTimeString("id-ID"); $("tConn").style.color = "";
     if (r.called && r.calledAt !== lastCall){ lastCall = r.calledAt; ring(r.loket); }
   } catch(e){
